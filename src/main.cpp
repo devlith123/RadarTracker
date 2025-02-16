@@ -1,10 +1,14 @@
 #include "trackAnalyzer.hpp"
+#include <thread>
 
 int main() {
-    TrackAnalyzer trackAnalyzer;
+    auto trackAnalyzer = std::make_unique<TrackAnalyzer>();
 
-    trackAnalyzer.loadTrackData("data/track.txt");
-    trackAnalyzer.loadAreaData("data/rect.txt");
+    std::thread trackThread(&TrackAnalyzer::loadTrackData, trackAnalyzer.get(), "data/track.txt");
+    std::thread areaThread(&TrackAnalyzer::loadAreaData, trackAnalyzer.get(), "data/rect.txt");
 
-    trackAnalyzer.analyzeTracker();
+    trackThread.join();
+    areaThread.join();
+
+    trackAnalyzer->analyzeTracker();
 }
